@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -41,13 +42,7 @@ namespace ProjectsTM.Model
 
         public ColorCondition At(int i)
         {
-            var index = 0;
-            foreach (var c in _list)
-            {
-                if (index == i) return c;
-                index++;
-            }
-            return null;
+            return _list.ElementAt(i);
         }
 
         public XElement ToXml()

@@ -29,9 +29,9 @@ namespace ProjectsTM.Service
 
         internal void CopyAndAdd(WorkItem orgItem, CallenderDay newFrom, Member newMember)
         {
-            if (orgItem == null) return;
-            if (newFrom == null) return;
-            if (newMember == null) return;
+            if (WorkItem.Invalid.Equals(orgItem)) return;
+            if (CallenderDay.Invalid.Equals(newFrom)) return;
+            if (Member.Invalid.Equals(newMember)) return;
 
             var copyItem = orgItem.Clone();
             var offset = _viewData.Original.Callender.GetOffset(copyItem.Period.From, newFrom);

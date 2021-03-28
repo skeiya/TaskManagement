@@ -43,12 +43,17 @@ namespace ProjectsTM.UI.TaskList
             this.MouseUp += TaskListGrid_MouseUp;
             this.KeyDown += TaskListGrid_KeyDown;
             this.Resize += TaskListGrid_Resize;
-            _widthAdjuster = new WidthAdjuster(GetAdjustCol);
+            _widthAdjuster = new WidthAdjuster(IsAdustCol);
 
             this._editService = new WorkItemEditService(viewData);
             AttachEvents();
             this.Disposed += DetachEvents;
             InitializeGrid();
+        }
+
+        bool IsAdustCol(RawPoint p)
+        {
+            return TryGetAdjustCol(p, out var _);
         }
 
         internal int GetErrorCount()
@@ -94,8 +99,7 @@ namespace ProjectsTM.UI.TaskList
         {
             _mouseDownPoint = e.Location;
             var rawPoint = this.Client2Raw(new ClientPoint(e.Location));
-            var col = GetAdjustCol(rawPoint);
-            if (col == null) return;
+            if (!TryGetAdjustCol(rawPoint, out var col)) return;
             var width = ColWidths[col.Value];
             _widthAdjuster.Start(rawPoint, width, GetWidthAdjuster(col));
         }

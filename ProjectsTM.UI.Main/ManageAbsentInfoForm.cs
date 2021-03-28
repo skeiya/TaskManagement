@@ -45,13 +45,11 @@ namespace ProjectsTM.UI.Main
         {
             string selectedItem = (string)listBox1.SelectedItem;
             if (selectedItem == null) return;
-            var before = ParseAbsentTerm(selectedItem);
-            if (before == null) return;
+            if (!TryParseAbsentTerm(selectedItem, out var before)) return;
             using (var dlg = new EditAbsentTermForm(_member, before, _callender))
             {
                 if (dlg.ShowDialog() != DialogResult.OK) return;
-                var after = dlg.EditAbsentTerm;
-                if (after == null) return;
+                if (!dlg.TryGetAbsentTerm(out var after)) return;
                 _absentTerms.Replace(before, after);
             }
             UpdateList();
@@ -67,8 +65,7 @@ namespace ProjectsTM.UI.Main
             using (var dlg = new EditAbsentTermForm(_member, null, _callender))
             {
                 if (dlg.ShowDialog() != DialogResult.OK) return;
-                var after = dlg.EditAbsentTerm;
-                if (after == null) return;
+                if (!dlg.TryGetAbsentTerm(out var after)) return;
                 _absentTerms.Add(after);
             }
             UpdateList();
@@ -78,17 +75,18 @@ namespace ProjectsTM.UI.Main
         {
             string selectedItem = (string)listBox1.SelectedItem;
             if (selectedItem == null) return;
-            var absentTerm = ParseAbsentTerm(selectedItem);
-            if (absentTerm == null) return;
+            if (!TryParseAbsentTerm(selectedItem, out var absentTerm)) return;
             _absentTerms.Remove(absentTerm);
             UpdateList();
         }
 
-        public AbsentTerm ParseAbsentTerm(string str)
+        public bool TryParseAbsentTerm(string str, out AbsentTerm result)
         {
+            result = new AbsentTerm(null, null);
             var m = Regex.Match(str, @"不在期間 : (.+) - (.+)");
-            if (!m.Success) return null;
-            return new AbsentTerm(_member, ParsePeriod(m.Groups[1].Value, m.Groups[2].Value));
+            if (!m.Success) return false;
+            result = new AbsentTerm(_member, ParsePeriod(m.Groups[1].Value, m.Groups[2].Value));
+            return true;
         }
 
         public static Period ParsePeriod(string from, string to)

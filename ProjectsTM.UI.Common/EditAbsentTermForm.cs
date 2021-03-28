@@ -10,8 +10,6 @@ namespace ProjectsTM.UI.Common
         private readonly Member _member;
         private readonly Callender _callender;
 
-        public AbsentTerm EditAbsentTerm => CreateAbsentTerm();
-
         public EditAbsentTermForm(Member member, AbsentTerm absentTerm, Callender callender)
         {
             InitializeComponent();
@@ -32,22 +30,25 @@ namespace ProjectsTM.UI.Common
 
         bool CheckEdit()
         {
-            return CreateAbsentTerm() != null;
+            return TryGetAbsentTerm(out var _);
         }
 
-        private AbsentTerm CreateAbsentTerm()
+        public bool TryGetAbsentTerm(out AbsentTerm result)
         {
-            var period = GetPeriod(textBoxFrom.Text, textBoxTo.Text);
-            if (period == null) return null;
-            return new AbsentTerm(_member, period);
+            result = new AbsentTerm(null, null);
+            if (!TryGetPeriod(textBoxFrom.Text, textBoxTo.Text, out var period)) return false;
+            result = new AbsentTerm(_member, period);
+            return true;
         }
 
-        private Period GetPeriod(string fromText, string toText)
+        private bool TryGetPeriod(string fromText, string toText, out Period result)
         {
+            result = new Period();
             var from = string.IsNullOrEmpty(fromText) ? AbsentTerm.UnlimitedFrom : GetDayByDate(fromText);
             var to = string.IsNullOrEmpty(toText) ? AbsentTerm.UnlimitedTo : GetDayByDate(toText);
-            if (!CheckAbsentPeriod(from, to)) return null;
-            return new Period(from, to);
+            if (!CheckAbsentPeriod(from, to)) return false;
+            result = new Period(from, to);
+            return true;
         }
 
         private bool CheckAbsentPeriod(CallenderDay from, CallenderDay to)

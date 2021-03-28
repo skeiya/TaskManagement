@@ -4,7 +4,6 @@ using ProjectsTM.UI.Common;
 using ProjectsTM.ViewModel;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace ProjectsTM.UI.TaskList

@@ -355,16 +355,21 @@ namespace FreeGridControl
             return new ColIndex(ColCount - 1);
         }
 
-        public ColIndex GetAdjustCol(RawPoint location)
+        public bool TryGetAdjustCol(RawPoint location, out ColIndex result)
         {
-            if (FixedRowCount == 0) return null;
-            if (FixedHeight < location.Y) return null;
+            result = new ColIndex(-1);
+            if (FixedRowCount == 0) return false;
+            if (FixedHeight < location.Y) return false;
             foreach (var col in ColIndex.Range(0, ColCount - 1))
             {
                 var center = _cache.GetRight(col);
-                if (center - 2 < location.X && location.X < center + 2) return col;
+                if (center - 2 < location.X && location.X < center + 2)
+                {
+                    result = col;
+                    return true;
+                }
             }
-            return null;
+            return false;
         }
 
         public Point Raw2Client(RawPoint raw)

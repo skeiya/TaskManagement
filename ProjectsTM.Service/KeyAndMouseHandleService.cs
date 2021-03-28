@@ -3,6 +3,7 @@ using ProjectsTM.Logic;
 using ProjectsTM.Model;
 using ProjectsTM.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -53,7 +54,7 @@ namespace ProjectsTM.Service
         {
             RawPoint cur = _grid.Global2Raw(Cursor.Position);
             if (_viewData.FilteredItems.PickWorkItem(_grid.X2Member(cur.X), _grid.Y2Day(cur.Y), out var workItem)) return workItem;
-            return null;
+            return WorkItem.Invalid;
         }
 
         public void MouseDown(MouseEventArgs e)
@@ -147,19 +148,18 @@ namespace ProjectsTM.Service
 
         private bool IsWorkItemExpandArea(ClientPoint location)
         {
-            return null != PickExpandingWorkItem(location);
+            return PickExpandingWorkItem(location).Any();
         }
 
-        public WorkItem PickExpandingWorkItem(ClientPoint location)
+        public IEnumerable<WorkItem> PickExpandingWorkItem(ClientPoint location)
         {
             foreach (var w in _viewData.Selected)
             {
                 var bounds = _grid.GetWorkItemDrawRectClient(w, _viewData.FilteredItems.Members);
                 if (bounds.IsEmpty) continue;
-                if (IsTopBar(bounds, location)) return w;
-                if (IsBottomBar(bounds, location)) return w;
+                if (IsTopBar(bounds, location)) yield return w;
+                if (IsBottomBar(bounds, location)) yield return w;
             }
-            return null;
         }
 
         internal static bool IsTopBar(ClientRectangle workItemBounds, ClientPoint point)

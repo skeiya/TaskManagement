@@ -8,12 +8,12 @@ namespace ProjectsTM.UI.TaskList
     {
         private RawPoint _orgLocation;
         private int _orgWidth = -1;
-        private readonly Func<RawPoint, ColIndex> _getAdjustCol;
+        private readonly Func<RawPoint, bool> _isAdjustCol;
         private Action<int> _adjustWidth;
 
-        public WidthAdjuster(Func<RawPoint, ColIndex> getAdjustCol)
+        public WidthAdjuster(Func<RawPoint, bool> isAdjustCol)
         {
-            this._getAdjustCol = getAdjustCol;
+            this._isAdjustCol = isAdjustCol;
         }
 
         internal void Start(RawPoint location, int orgWidth, Action<int> adjustWidth)
@@ -33,7 +33,7 @@ namespace ProjectsTM.UI.TaskList
         {
             var updatedWidth = _orgWidth + (location.X - _orgLocation.X);
             _adjustWidth?.Invoke(updatedWidth);
-            return IsActive || (_getAdjustCol(location) != null) ? Cursors.SizeWE : Cursors.Default;
+            return IsActive || _isAdjustCol(location) ? Cursors.SizeWE : Cursors.Default;
         }
 
         internal bool IsActive => _orgWidth != -1;

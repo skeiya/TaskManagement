@@ -41,19 +41,9 @@ namespace ProjectsTM.UI.Main
 
         private void bottonDelete_Click(object sender, EventArgs e)
         {
-            var c = GetSelectedCondition();
-            if (c == null) return;
-            _colorConditions.Remove(c);
+            if (listView1.SelectedIndices.Count != 1) return;
+            _colorConditions.Remove(_colorConditions.At(listView1.SelectedIndices[0]));
             UpdateList();
-        }
-
-        private ColorCondition GetSelectedCondition()
-        {
-            foreach (int i in listView1.SelectedIndices)
-            {
-                return _colorConditions.At(i);
-            }
-            return null;
         }
 
         private void ButtonEdit_Click(object sender, EventArgs e)

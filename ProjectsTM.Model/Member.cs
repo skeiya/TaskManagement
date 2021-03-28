@@ -85,7 +85,7 @@ namespace ProjectsTM.Model
         public static Member Parse(string text)
         {
             var words = text.Split('/');
-            if (words.Length < 3) return null;
+            if (words.Length < 3) throw new Exception("parse error");
             return new Member(words[0], words[1], words[2]);
         }
 

@@ -184,29 +184,29 @@ namespace ProjectsTM.Service
                 return;
             }
             idx--;
-            var filter = GetFilterByFiles(ref idx);
-            if (filter == null)
+            if (!TryGetFilterByFiles(ref idx, out var filter)) 
             {
-                filter = GetFilterByProjects(ref idx);
-            }
-            if (filter == null)
-            {
-                filter = GetFilterByCompanies(ref idx);
+                if (!TryGetFilterByProjects(ref idx, out filter))
+                {
+                    if (!TryGetFilterByCompanies(ref idx, out filter)) return;
+                }
             }
             _viewData.SetFilter(filter);
         }
 
-        private Filter GetFilterByCompanies(ref int idx)
+        private bool TryGetFilterByCompanies(ref int idx, out Filter result)
         {
+            result = new Filter();
             var companies = GetCompanies();
             if (companies.Count() <= idx)
             {
                 idx -= companies.Count();
-                return null;
+                return false;
             }
             var company = companies.ElementAt(idx);
             var members = GetMembersConcerningWithCompany(company);
-            return new Filter(null, null, members, false, company, false);
+            result = new Filter(null, null, members, false, company, false);
+            return true;
         }
 
         private Members GetMembersConcerningWithCompany(string com)
@@ -220,13 +220,14 @@ namespace ProjectsTM.Service
             return members;
         }
 
-        private Filter GetFilterByProjects(ref int idx)
+        private bool TryGetFilterByProjects(ref int idx, out Filter result)
         {
+            result = new Filter();
             var projects = GetProjects();
             if (projects.Count() <= idx)
             {
                 idx -= projects.Count();
-                return null;
+                return false;
             }
             var pro = projects.ElementAt(idx);
             var members = new Members();
@@ -234,24 +235,27 @@ namespace ProjectsTM.Service
             {
                 members.Add(m);
             }
-            return new Filter(null, null, members, false, pro.ToString(), false);
+            result = new Filter(null, null, members, false, pro.ToString(), false);
+            return true;
         }
 
-        private Filter GetFilterByFiles(ref int idx)
+        private bool TryGetFilterByFiles(ref int idx, out Filter result)
         {
+            result = new Filter();
             if (_allPaths.Count <= idx)
             {
                 idx -= _allPaths.Count;
-                return null;
+                return false;
             }
             var path = _allPaths[idx];
             if (!File.Exists(path))
             {
-                return null;
+                return false;
             }
             using (var rs = StreamFactory.CreateReader(path))
             {
-               return Filter.FromXml(XElement.Load(rs));
+                result = Filter.FromXml(XElement.Load(rs));
+                return true;
             }
         }
     }

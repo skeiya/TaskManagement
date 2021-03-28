@@ -137,7 +137,7 @@ namespace ProjectsTM.Service
 
         public async void Update(WorkItem wi, Callender callender)
         {
-            if (wi == null)
+            if (WorkItem.Invalid.Equals(wi))
             {
                 this.Hide();
                 return;

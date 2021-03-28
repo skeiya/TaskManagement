@@ -70,7 +70,7 @@ namespace ProjectsTM.Model
             }
             catch
             {
-                return null;
+                throw new Exception("parse error");
             }
         }
 
